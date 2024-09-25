@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Management</title>
+    <!-- <link rel="stylesheet" href="/styles.css"> -->
+</head>
+<body>
+    <h1>Meeting Management</h1>
+    
+    <h2>Available Slots</h2>
+    <div id="slots">
+        <!-- Loop through slots, which now includes availableSeats and time -->
+        <% slots.forEach(function(slot) { %>
+            <div class="slot">
+                <h3><%= slot.time %></h3>
+                <p>Available Seats: <%= slot.availableSeats %></p>
+                <!-- Disable booking button if no seats are available -->
+                <button onclick="showBookingForm('<%= slot.time %>')" <%= slot.availableSeats === 0 ? 'disabled' : '' %>>Book Slot</button>
+            </div>
+        <% }); %>
+    </div>
+
+    <div id="booking-form" style="display: none;">
+        <h2>Book Slot</h2>
+        <form id="form" method="POST" action="/book-slot"> <!-- Added action attribute -->
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <br>
+            <input type="hidden" id="slot-time" name="slot"> <!-- Changed name to match backend -->
+            <button type="submit">Book</button>
+        </form>
+    </div>
+
+    <h2>Scheduled Meetings</h2>
+    <ul id="scheduled-meetings"> <!-- Add an id for scheduled meetings list -->
+        <% bookedMeetings.forEach(function(meeting, index) { %>
+            <li>
+                <strong><%= meeting.name %></strong> Please join the meeting via this  
+                <a href="<%= meeting.link %>" target="_blank">Join Google Meet</a> <%= meeting.time %> -
+                <form method="POST" action="/cancel-meeting/<%= index %>" style="display:inline;">
+                    <button type="submit">Cancel</button>
+                </form>
+            </li>
+        <% }); %>
+    </ul>
+
+    <script>
+        function showBookingForm(slot) {
+            document.getElementById('booking-form').style.display = 'block';
+            document.getElementById('slot-time').value = slot;
+        }
+    </script>
+</body>
+</html>
